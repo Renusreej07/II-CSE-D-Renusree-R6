@@ -1,349 +1,230 @@
-# (2b) 1. Find the names and ages of all sailors
+
+# (3a) 1 . Display employee ID, first name and hire date in DD-MON-YYYY format.
 
 ```
-SELECT sname,age
-FROM Sailors;
+SELECT employee_id, first_name,
+       TO_CHAR(hire_date, 'DD-MON-YYYY') AS hire_date
+FROM EMPLOYEE;
 ```
-![output](2b_1.png)
-# (2b) 2. Find all sailors with a rating above 7.
+![output](3a.png)
+
+# (3a) 2. Display employee ID, first name and salary with currency symbol.
 
 ```
-SELECT * FROM Sailors
-WHERE rating > 7;
+SELECT employee_id, first_name,
+       TO_CHAR(salary, 'L99999.99') AS salary
+FROM EMPLOYEE;
 ```
-![output](2b_2.png)
-# (2b) 3. Find the names who have reserved boat number 103
+![output](3a_2.png)
+
+# (3a) 3. Add 5000 to each employee's salary using TO_NUMBER.
 
 ```
-SELECT s.sname
-FROM Sailors s, Reserves r
-WHERE s.sid = r.sid
-AND r.bid = 103;
+SELECT employee_id, first_name,
+       TO_NUMBER(salary) + 5000 AS new_salary
+FROM EMPLOYEE;
 ```
-# (2b) 4. Find the sids of sailors who have reserved a red boat.
+![output](3a_3.png)
+
+# (3a) 4. Display details of employees hired after 01-JAN-2020.
 
 ```
-SELECT s.sid
-FROM Sailors s, Reserves r, Boats b
-WHERE s.sid = r.sid
-AND r.bid = b.bid
-AND b.color = 'red';
+SELECT *
+FROM EMPLOYEE
+WHERE hire_date > TO_DATE('01-JAN-2020', 'DD-MON-YYYY');
 ```
-![output](2b_4.png)
-# (2b) 5. Find the names of sailors who have reserved a red boat.
+![output](3a_4.png)
+
+# (3a) 5. Display the full name by concatenating first name and last name using ||.
 
 ```
-SELECT s.sname
-FROM Sailors s, Reserves r, Boats b
-WHERE s.sid = r.sid
-AND r.bid = b.bid
-AND b.color = 'red';
+SELECT first_name || ' ' || last_name AS full_name
+FROM EMPLOYEE;
 ```
-![output](2b_5.png)
-# (2b) 6. Find the colors of reserved by lubber.
+![output](3a_5.png)
+# (3a) 6. Concatenate first name and last name using CONCAT.
 
 ```
-SELECT b.color
-FROM Sailors s, Reserves r, Boats b
-WHERE s.sid = r.sid
-AND r.bid = b.bid
-AND s.sname = 'Lubber';
+SELECT CONCAT(first_name, last_name) AS full_name
+FROM EMPLOYEE;
 ```
-![ouyput](2b_6.png)
-# (2b) 7. Find the names of sailors who have reserved at least one boat.
+![output](3a_6.png)
+
+# (3a) 7. Display first name left-padded with * using LPAD.
 
 ```
-SELECT DISTINCT s.sname
-FROM Sailors s, Reserves r
-WHERE s.sid = r.sid;
-```
-![output](2b_7.png)
-
-# (2b) 8. Compute increments for the ratings of persons who have sailed two different boats on the same day.
-```
-SELECT DISTINCT s.sname, s.rating + 1
-FROM Sailors s, Reserves r1, Reserves r2
-WHERE s.sid = r1.sid
-AND s.sid = r2.sid
-AND r1.day = r2.day
-AND r1.bid < > r2.bid;
-```
-![output](2b_8.png)
-SELECT age
-FROM Sailors
-WHERE sname LIKE 'B % B'
-AND LENGTH(sname) >= 3;
-![output](2b-9.png)
-
-AND b.color = 'red'
-WHERE s.sid = r.sid
-![output](2b_10.png)
-
-AND b.color = 'red'
-WHERE s.sid = r.sid
-AND r.bid = b.bid
-AND b.color = 'green';
-```
-# (2b) 12. Find the sids of all sailors who have reserved red boats but not green boats.
-```
-FROM Sailors s, Reserves r, Boats b
-WHERE s.sid = r.sid
-AND r.bid = b.bid
-AND b.colour='red'
-MINUS
-SELECT DISTINCT s.sid
-FROM Sailors s,Reserves r, Boats b
-![output](2b_12.png)
-
-# (2b) 13. Find all sids of sailors who have a rating of 10 or have reserved boat 104.
-SELECT sid
-UNION
-SELECT sid
-FROM Reserves
-```
-![output](2b_13.png)
-
-# (2b) 14. Find the names of sailors who have reserved boat number 103.
-SELECT s.sname
-FROM Sailors s
-WHERE EXISTS (
-    SELECT * FROM Reserves r
-    WHERE r.bid = 103
-    AND r.sid = s.sid
-);
-```
-![output](2b_14.png)
-
-# (2b) 15. Find sailors whose rating is better than some sailor called Horatio.
-```
-SELECT s.sid
-FROM Sailors s
-WHERE s.rating > ANY (
-    SELECT s2.rating
-    FROM Sailors s2
-    WHERE s2.sname = 'Horatio'
-);
-```
-![output](2b_15.png)
-# (2b) 16. Find sailors whose rating is better than every sailor called Horatio.
-```
-AND r1.bid = b1.bid
-AND b1.color = 'red'
-AND s.sid = r2.sid
-AND r2.bid = b2.bid
-AND b2.color = 'green';
-```
-![output](2b-20.png)
-
-# (2b) 21. Find the names of sailors who have reserved all boats.
-```
-SELECT s.sname
-FROM Sailors s
-WHERE NOT EXISTS (
-    SELECT b.bid
-    FROM Boats b
-    WHERE NOT EXISTS (
-        SELECT r.bid
-        FROM Reserves r
-        WHERE r.sid = s.sid
-        AND r.bid = b.bid
-    )
-);
-```
-![output](2b-21.png)
-# (2b) 22. Find the average age of all sailors.
-```
-SELECT AVG(age)
-FROM Sailors;
-```
-![output](2b-22.png)
-
-```
-![output](2b-30.png)
-# (2b) 31. Find the average age of sailors for each rating level that has at least two sailors.
-```
-SELECT rating, AVG(age)
-FROM sailors
-GROUP BY rating
-HAVING COUNT(*) >= 2;
-```
-![output](2b-31.png)
-# (2b) 32. Find the average age of sailors who are of voting age (i.e., at least 18 years old) for each rating level that has at least two sailors.
-```
-SELECT rating, AVG(age)
-FROM sailors
-WHERE age >= 18
-GROUP BY rating
-HAVING COUNT(*) >= 2;
-```
-![output](2b-32.png)
-
-# (2b) 33. Find the average age of sailors who are of voting age (i.e., at least 18 years old) for each rating level that has at least two such sailors.
-```
-SELECT rating, AVG(age)
-FROM sailors
-WHERE age >= 18
-GROUP BY rating
-HAVING COUNT(*) >= 2;
-```
-![output](2b-33.png)
-# (2b) 34. Find those ratings for which the average age of sailors is the minimum over all ratings.
-```
-SELECT rating
-FROM sailors
-GROUP BY rating
-HAVING AVG(age) = (
-    SELECT MIN(avg_age)
-    FROM (
-        SELECT rating, AVG(age) AS avg_age
-        FROM sailors
-        GROUP BY rating
-    )
-);
-```
-![output](2b-34.png)
-# (2b) 23.Find the average age of sailors with a rating of 10.
-```
-SELECT AVG(age)
-FROM Sailors
-WHERE rating = 10;
-```
-WHERE b.bid = r.bid
-GROUP BY b.bid;
-AND b.color = 'red'
-![output](2b-23.png)
-# (2b) 24. Find the name and age of the oldest sailor.
+SELECT LPAD(first_name, 10, '*') AS first_name
+FROM EMPLOYEE;
 ```
 
-SELECT sname, age
-FROM Sailors
-```
-SELECT b.bid, COUNT(r.sid)
-FROM boats b, reserves r
-WHERE age = (SELECT MAX(age) FROM Sailors);
-![output](2b-29.png)
-# (2b) 30. For each red boat, find the number of reservations for this boat.
-````
-![output](2b-24.png)
-GROUP BY rating
-HAVING COUNT(*) >= 2;
-```
-# (2b) 25. Count the number of sailors.
-```
-SELECT COUNT(*)
-FROM Sailors;
-```
-![output](2b-25.png)
-FROM sailors
-WHERE age >= 18
-FROM sailors
-![output](2b-28.png)
-# (2b) 29. Find the age of the youngest sailor who is eligible to vote (i.e., is at least 18 years old) for each rating level with at least two such sailors.
-```
-SELECT rating, MIN(age)
-GROUP BY rating;
-```
-# (2b) 26. Count the number of different sailor names.
-SELECT rating, MIN(age)
-```
-SELECT COUNT(DISTINCT sname)
-```
-FROM Sailors;
 
-# (2b) 28. Find the age of the youngest sailor for each rating level.
 ```
-![output](2b-26.png)
-![output](2b-27.png)
-FROM sailors
-WHERE age > (
-    SELECT MAX(age)
-);
+SELECT RPAD(first_name, 10, '*') AS first_name
+FROM EMPLOYEE;
+![output](3a_8.png)
 ```
-    WHERE rating = 10
-    FROM sailors
-# (2b) 27. Find the names of sailors who are older than the oldest sailor with a rating of 10.
+SELECT LTRIM(first_name) AS first_name
 ```
-SELECT sname
-SELECT s.sid
-FROM Sailors s
-WHERE s.rating > ALL (
-    SELECT s2.rating
-FROM Sailors s, Reserves r1, Boats b1, Reserves r2, Boats b2
-WHERE s.sid = r1.sid
-```
-SELECT DISTINCT s.sname
-    FROM Sailors s2
+![output](3a_9.png)
 
-# (2b) 20. Find the names of sailors who have reserved both a red and a green boat.
-    WHERE s2.sname = 'Horatio'
-);
-```
-![output](2b-16.png)
-WHERE rating = (SELECT MAX(rating) FROM Sailors);
-```
-![output](2b-19.png)
 
-# (2b) 17. Find the sailors with the highest rating.
-![output](2b-18.png)
-SELECT sid
-FROM Sailors
+FROM EMPLOYEE;
+![output](3a_10.png)
 
-# (2b) 19. Find the sailors who have the highest rating.
+```
+SELECT LOWER(first_name) AS first_name
+
+SELECT UPPER(first_name) AS first_name
+![output](3a_12.png)
+
+# (3a) 13. Display first names in proper case using INITCAP.
+
+```
+FROM EMPLOYEE;
 ```
 ```
 ```
-);
-SELECT s.sid
-FROM Sailors s
-    AND b2.color = 'green'
-WHERE s.rating >= ALL (
-    AND r2.bid = b2.bid
-    SELECT s2.rating
-    FROM Sailors s2, Reserves r2, Boats b2
-    WHERE s2.sid = r2.sid
-    FROM Sailors s2
-    SELECT s2.sid
-);
-AND s.sid IN (
+SELECT INITCAP(first_name) AS first_name
+# (3a) 14. Display the length of each employee's first name.
+FROM EMPLOYEE;
+       SUBSTR(first_name, 1, 3) AS first_three_chars
+![output](3a_15.png)
+
+# (3a) 16. Find the position of a in each first name using INSTR.
+
 ```
-AND b.color = 'red'
-![output](2b_17.png)
-# (2b) 18. Find the names of sailors who have reserved both a red and a green boat.
+FROM EMPLOYEE;
+![output](3a_16.png)
+
+# (3a) 17. Display employee details along with the current system date using SYSDATE.
+
 ```
-WHERE s.sid = r.sid
-AND r.bid = b.bid
-SELECT DISTINCT s.sname
-FROM Sailors s, Reserves r, Boats b
+       job_id, department, salary, commission,
+FROM EMPLOYEE;
 ```
-WHERE bid = 104;
-FROM Sailors
-WHERE rating = 10
+![output](3a_18.png)
+
+# (3a) 18. Display the next Monday after each employee's hire date.
+
+```
+SELECT employee_id, first_name, hire_date,
+       NEXT_DAY(hire_date, 'MONDAY') AS next_monday
+FROM EMPLOYEE;
+```
+![output](3a_19.png)
+
+# (3a) 19. Display the date after adding 6 months to each hire date.
+
+```
+SELECT employee_id, first_name, hire_date,
+       ADD_MONTHS(hire_date, 6) AS date_after_6_months
+FROM EMPLOYEE;
+```
+![output](3a_19.png)
+
+# (3a) 20. Display the last day of the month of each employee's hire date.
+
+```
+SELECT employee_id, first_name, hire_date,
+       LAST_DAY(hire_date) AS last_day_of_month
+FROM EMPLOYEE;
+```
+![output](3a_20.png)
+
+# (3a) 21. Calculate the total number of months worked using MONTHS_BETWEEN.
+
+```
+SELECT employee_id, first_name, hire_date,
+       MONTHS_BETWEEN(SYSDATE, hire_date) AS months_worked
+FROM EMPLOYEE;
+```
+![output](3a_21.png)
+
+# (3a) 22. Display the smaller value between salary and 60000 using LEAST.
+
+```
+SELECT employee_id, first_name, salary,
+       LEAST(salary, 60000) AS smaller_value
+FROM EMPLOYEE;
+```
+![output](3a_22.png)
+
+# (3a) 23. Display the greater value between salary and 60000 using GREATEST.
+
+```
+SELECT employee_id, first_name, salary,
+       GREATEST(salary, 60000) AS greater_value
+FROM EMPLOYEE;
+```
+![output](3a_23.png)
+
+# (3a) 24. Display the first day of the month of each hire date using TRUNC.
+
+```
+SELECT employee_id, first_name, hire_date,
+       TRUNC(hire_date, 'MONTH') AS first_day_of_month
+FROM EMPLOYEE;
+```
+![output](3a_24.png)
+
+# (3a) 25. Round each hire date to the nearest month using ROUND.
+
+```
+SELECT employee_id, first_name, hire_date,
+       ROUND(hire_date, 'MONTH') AS rounded_month
+FROM EMPLOYEE;
+```
+![output](3a_25.png)
+
+# (3a) 26. Display hire date in DAY, DD-MON-YYYY format.
+
+```
+SELECT employee_id, first_name, hire_date,
+       TO_CHAR(hire_date, 'DAY, DD-MON-YYYY') AS formatted_hire_date
+FROM EMPLOYEE;
+```
+![output](3a_26.png)
+
+# (3a) 27. Display details of employees hired before 01-JAN-2019.
+
+```
+SELECT *
+FROM EMPLOYEE
+WHERE hire_date < TO_DATE('01-JAN-2019', 'DD-MON-YYYY');
+```
+![output](3a_27.png)
+       hire_date, city, SYSDATE AS current_date
+SELECT employee_id, first_name, last_name, gender,
+```
+SELECT first_name,
+       INSTR(LOWER(first_name), 'a') AS position_of_a
+FROM EMPLOYEE;
 ```
 ```
-WHERE s.sid = r.sid
-AND r.bid = b.bid
-AND b.colour = 'green';
-SELECT DISTINCT s.sid
-INTERSECT
-FROM Sailors s, Reserves r, Boats b
-SELECT DISTINCT s.sname
-AND r.bid = b.bid
-SELECT DISTINCT s.sname
-WHERE s.sid = r.sid
-FROM Sailors s, Reserves r, Boats b
+SELECT first_name,
+# (3a) 15. Display the first three characters of each first name using SUBSTR.
+
 ```
-# (2b) 11.Find the names of sailors who have reserved both a red and a green boat.
-AND r.bid = b.bid
+![output](3a_14.png)
+
+
 ```
-AND b.color = 'green';
-FROM Sailors s, Reserves r, Boats b
-UNION
-SELECT DISTINCT s.sname
-AND r.bid = b.bid
-# (2b) 10.Find the names of Sailors who reserved a red boat or a green boat.
-SELECT DISTINCT s.sname
-WHERE s.sid = r.sid
-FROM Sailors s, Reserves r, Boats b
+SELECT first_name, LENGTH(first_name) AS name_length
+
+FROM EMPLOYEE;
+![output](3a_13.png)
 ```
+# (3a) 12. Display first names in uppercase.
+FROM EMPLOYEE;
+# (3a) 11. Display first names in lowercase.
+
 ```
+SELECT RTRIM(first_name) AS first_name
+```
+# (3a) 10. Remove trailing spaces from first name using RTRIM.
+FROM EMPLOYEE;
+# (3a) 9. Remove leading spaces from first name using LTRIM.
+
+```
+# (3a) 8. Display first name right-padded with * using RPAD.
 
