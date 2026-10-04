@@ -1,220 +1,112 @@
-# (4) 1. Create DEPT table
-
+# (5a) Create student Database with attributes Student_id, Student_name, course and Marks and insert at least 15 row of data using insert statement.
 ```
-CREATE TABLE DEPT
-(
-    DNO NUMBER,
-    DNAME VARCHAR2(30)
+CREATE TABLE STUDENT (
+    STUDENT_ID NUMBER PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(30),
+    COURSE VARCHAR2(30),
+    MARKS NUMBER(3)
 );
-```
-![output](4-1.png)
 
-# (4) 2. Primary Key for DNO and NOT NULL for DNAME
+INSERT INTO STUDENT VALUES (1, 'Anil', 'CSE', 85);
+INSERT INTO STUDENT VALUES (2, 'Bhavya', 'CSE', 72);
+INSERT INTO STUDENT VALUES (3, 'Charan', 'ECE', 55);
+INSERT INTO STUDENT VALUES (4, 'Divya', 'CSE', 91);
+INSERT INTO STUDENT VALUES (5, 'Esha', 'EEE', 48);
+INSERT INTO STUDENT VALUES (6, 'Farhan', 'CSE', 67);
+INSERT INTO STUDENT VALUES (7, 'Gowtham', 'ECE', 59);
+INSERT INTO STUDENT VALUES (8, 'Harika', 'CSE', 76);
+INSERT INTO STUDENT VALUES (9, 'Ishitha', 'IT', 88);
+INSERT INTO STUDENT VALUES (10, 'Jayanth', 'CSE', 45);
+INSERT INTO STUDENT VALUES (11, 'Kavya', 'IT', 63);
+INSERT INTO STUDENT VALUES (12, 'Lokesh', 'ECE', 52);
+INSERT INTO STUDENT VALUES (13, 'Manasa', 'CSE', 95);
+INSERT INTO STUDENT VALUES (14, 'Naveen', 'EEE', 58);
+INSERT INTO STUDENT VALUES (15, 'Pooja', 'CSE', 81);
 
+COMMIT;
 ```
-ALTER TABLE DEPT
-ADD CONSTRAINT PK_DEPT PRIMARY KEY (DNO);
-ALTER TABLE DEPT
-MODIFY DNAME NOT NULL;
-```
-![output](4-2.png)
-
-# (4) 3. Create STUDENT4 table
-
-```
-CREATE TABLE STUDENT4
-(
-    SID NUMBER,
-    SNAME VARCHAR2(30),
-    DID NUMBER
-);
-```
-![output](4-3.png)
-
-# (4) 4. Apply constraints to STUDENT4
+![output](op-1.png)
+![output](op-2.png)
+![output](op-3.png)
 
 ```
-ALTER TABLE STUDENT4
-ADD CONSTRAINT PK_STUDENT4 PRIMARY KEY (SID);
-ALTER TABLE STUDENT4
-MODIFY SNAME NOT NULL;
-ALTER TABLE STUDENT4
-ADD CONSTRAINT FK_STUDENT4_DEPT
-FOREIGN KEY (DID)
-REFERENCES DEPT(DNO);
-```
-![output](4-4.png)
+SET SERVEROUTPUT ON;
 
-# (4) 5. Insert departments
+DECLARE
+    CURSOR C1 IS
+        SELECT STUDENT_ID, STUDENT_NAME, MARKS
+        FROM STUDENT
+        WHERE MARKS >= 60;
 
-```
-INSERT INTO DEPT VALUES (10, 'CSE');
-INSERT INTO DEPT VALUES (20, 'ME');
-INSERT INTO DEPT VALUES (30, 'CE');
-INSERT INTO DEPT VALUES (40, 'EEE');
-INSERT INTO DEPT VALUES (50, 'ECE');
-INSERT INTO DEPT VALUES (60, 'CSM');
-INSERT INTO DEPT VALUES (70, 'CSD');
-```
-![output](4-5.png)
+    V_FOUND BOOLEAN := FALSE;
+    E_NO_STUDENT EXCEPTION;
 
-# (4) 6. Insert 10 students into STUDENT4
+BEGIN
+    FOR REC IN C1 LOOP
+        V_FOUND := TRUE;
 
-```
-INSERT INTO STUDENT4 VALUES (101, 'Rahul', 10);
-INSERT INTO STUDENT4 VALUES (102, 'Sneha', 20);
-INSERT INTO STUDENT4 VALUES (103, 'Arjun', 30);
-INSERT INTO STUDENT4 VALUES (104, 'Priya', 40);
-INSERT INTO STUDENT4 VALUES (105, 'Kiran', 50);
-INSERT INTO STUDENT4 VALUES (106, 'Nikhil', 60);
-INSERT INTO STUDENT4 VALUES (107, 'Anu', 70);
-INSERT INTO STUDENT4 VALUES (108, 'Ravi', 10);
-INSERT INTO STUDENT4 VALUES (109, 'Meena', 20);
-INSERT INTO STUDENT4 VALUES (110, 'Suresh', 30);
-```
-![output](4-6.png)
+        DBMS_OUTPUT.PUT_LINE(
+            'Student ID: ' || REC.STUDENT_ID ||
+            ', Student Name: ' || REC.STUDENT_NAME ||
+            ', Marks: ' || REC.MARKS
+        );
+    END LOOP;
 
-# (4) 7. NATURAL JOIN
+    IF V_FOUND = FALSE THEN
+        RAISE E_NO_STUDENT;
+    END IF;
 
-```
-SELECT S.SID, S.SNAME, S.DID, D.DNAME
-FROM STUDENT4 S
-JOIN DEPT D
-ON S.DID = D.DNO;
-```
-![output](4-7.png)
+EXCEPTION
+    WHEN E_NO_STUDENT THEN
+        DBMS_OUTPUT.PUT_LINE('No First Class Students Found.');
 
-# (4) 8. EQUI JOIN
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+```
+![output](op-4.png)
+![output](op-5.png)
+![output](op-6.png)
+![output](op-7.png)
+![output](op-8.png)
 
-```
-SELECT S.SID, S.SNAME, D.DNO, D.DNAME
-FROM STUDENT4 S
-INNER JOIN DEPT D
-ON S.DID = D.DNO;
-```
-![output](4-8.png)
-
-# (4) 9. CONDITIONAL JOIN
-
-```
-SELECT S.SID, S.SNAME, D.DNO, D.DNAME
-FROM STUDENT4 S
-JOIN DEPT D
-ON S.DID > D.DNO;
-```
-![output](4-9a.png)
-![output](4-9b.png)
-# (4) 10. LEFT OUTER NATURAL JOIN
-
-```
-SELECT S.SID, S.SNAME, S.DID, D.DNAME
-FROM STUDENT4 S
-LEFT OUTER JOIN DEPT D
-ON S.DID = D.DNO;
-```
-![output](4-10.png)
-
-# (4) 11. RIGHT OUTER NATURAL JOIN
-
-```
-SELECT S.SID, S.SNAME, S.DID, D.DNAME
-FROM STUDENT4 S
-RIGHT OUTER JOIN DEPT D
-ON S.DID = D.DNO;
-```
-![output](4-11.png)
-
-# (4) 12. FULL OUTER NATURAL JOIN
-
-```
-SELECT S.SID, S.SNAME, S.DID, D.DNAME
-FULL OUTER JOIN DEPT D
-```
-![output](4-12.png)
-
-SELECT S.SID, S.SNAME, S.DID, D.DNO, D.DNAME
-FROM STUDENT4 S
-LEFT OUTER JOIN DEPT D
+# (5b) 5b) Insert data into student table and use COMMIT, ROLLBACK and SAVEPOINT in PL/SQL block. 
 
 
 ```
-RIGHT OUTER JOIN DEPT D
+SET SERVEROUTPUT ON;
 
-# (4) 15. FULL OUTER EQUI JOIN
+BEGIN
+    INSERT INTO STUDENT
+    VALUES (16, 'Rahul', 'CSE', 85);
 
-SELECT S.SID, S.SNAME, S.DID, D.DNO, D.DNAME
-# (4) 16. LEFT OUTER CONDITIONAL JOIN
-![output](4-17a.png)
-# (4) 18. FULL OUTER CONDITIONAL JOIN
+    INSERT INTO STUDENT
+    VALUES (17, 'Sneha', 'ECE', 78);
 
-FROM STUDENT4 S
-# (4) 19. CROSS JOIN
+    SAVEPOINT SP1;
 
-SELECT S.SID, S.SNAME, D.DNO, D.DNAME
-FROM STUDENT4 S
-```
-![output](4-19b.png)
-![output](4-19c.png)
-![output](4-19d.png)
-# (4) 21. Practice JOIN operations
+    INSERT INTO STUDENT
+    VALUES (18, 'Kiran', 'EEE', 65);
 
-```
-SELECT S.SID, S.SNAME, D.DNAME
-FROM STUDENT4 S
-INNER JOIN DEPT D;
-![output](4-21a.png)
-![output](4-21b.png)
-```
+    DBMS_OUTPUT.PUT_LINE('All three records have been inserted.');
 
-![output](4-19a.png)
-CROSS JOIN DEPT D;
-```
-![output](4-18b.png)
+    ROLLBACK TO SP1;
 
-```
-![output](4-18a.png)
-FULL OUTER JOIN DEPT D
-ON S.DID > D.DNO;
-```
-SELECT S.SID, S.SNAME, S.DID, D.DNO, D.DNAME
-![output](4-17b.png)
+    DBMS_OUTPUT.PUT_LINE('Rollback to SAVEPOINT completed.');
 
+    COMMIT;
 
-![output](4-16a.png)
-ON S.DID > D.DNO;
-```
-SELECT S.SID, S.SNAME, S.DID, D.DNO, D.DNAME
-FROM STUDENT4 S
-RIGHT OUTER JOIN DEPT D
-![output](4-16b.png)
-# (4) 17. RIGHT OUTER CONDITIONAL JOIN
+    DBMS_OUTPUT.PUT_LINE('Transaction committed successfully.');
 
-```
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
 
-FROM STUDENT4 S
+SELECT * FROM STUDENT;
 ```
-LEFT OUTER JOIN DEPT D
-ON S.DID > D.DNO;
-SELECT S.SID, S.SNAME, S.DID, D.DNO, D.DNAME
-```
-FULL OUTER JOIN DEPT D
-
-![output](4-15.png)
-ON S.DID = D.DNO;
-```
-FROM STUDENT4 S
-```
-ON S.DID = D.DNO;
-![output](4-14.png)
-```
-FROM STUDENT4 S
-SELECT S.SID, S.SNAME, S.DID, D.DNO, D.DNAME
-# (4) 14. RIGHT OUTER EQUI JOIN
-```
-![output](4-13.png)
-ON S.DID = D.DNO;
-```
-# (4) 13. LEFT OUTER EQUI JOIN
-
-ON S.DID = D.DNO;
+![output](op-b1.png)
+![output](op-b2.png)
 
