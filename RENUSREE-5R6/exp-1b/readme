@@ -1,3 +1,4 @@
+
 # (1b) 1. Implement the table using above constraints.
 
 ```
@@ -69,55 +70,50 @@ INSERT INTO GRADE_REPORT VALUES (17,119,'C');
 INSERT INTO GRADE_REPORT VALUES (8,85,'A');
 INSERT INTO GRADE_REPORT VALUES (8,92,'A');
 ```
-![outout](31.png)
+![output](31.png)
 ![output](31.png)
 ![output](31.png)
 ![output](33.png)
 ![output](31.png)
 ![output](31.png)
-# (1b) 4.Display the insatnces of each table in the database.
-
 ```
-SELECT * FROM STUDENT;
 SELECT * FROM COURSE;
-SELECT * FROM SECTION;
 SELECT * FROM GRADE_REPORT;
-SELECT * FROM PREREQUISITES;
 ```
-![output](1.dd.png)
-![output](1.ee.png)
-![output](1.ff.png)
 ![output](1.gg.png)
 ![output](1.hh.png)
-# (1b) 5.All dranch attribute in student table and describe the table.
+# (1b) 5.All branch attribute in student table and describe the table.
 
-
-```
 ALTER TABLE STUDENT
 ADD BRANCH VARCHAR2(10);
 
-DESC STUDENT;
 ```
 ![output](1b_5.png)
-# (1b) 6.Copy major attribute values into branch attribute and display it.
 
 ```
 UPDATE STUDENT
 SET BRANCH = MAJOR;
-
 SELECT BRANCH FROM STUDENT;
 ```
 ![output](1b_6.png)
 # (1b) 7.Remove the major attribute in student.
+
+```
 ALTER TABLE STUDENT
+DROP COLUMN MAJOR;
+```
 ![output](1b_7.png)
+# (1b) 8.Change the name of Course_number to cid in course and describe it.
+
+# (1b) 6.Copy major attribute values into branch attribute and display it.
+DESC STUDENT;
+
+```
 ALTER TABLE COURSE
-RENAME COLUMN COURSE_NUMBER TO CID;
+
 DESC COURSE;
 ```
-![output](1b_8.png)
 # (1b) 9.Change the value of credit-hrs of database to 4 in course
-
 ```
 UPDATE COURSE
 WHERE COURSE_NAME = 'Database';
@@ -127,17 +123,18 @@ SELECT * FROM COURSE;
 # (1b) 10.Put NOT NULL consrtaint to column branch in student
 
 ```
-ALTER TABLE STUDENT
-MODIFY BRANCH VARCHAR2(10) NOT NULL;
 ```
 ![output](1b_10.png)
 # (1b) 11.Replace the student table name to pupil
+
 
 ```
 RENAME STUDENT TO PUPIL;
 DESC PUPIL;
 ```
 ![output](1b_11.png)
+# (1b) 12.Remove the student table
+
 ```
 DROP TABLE PUPIL;
 ```
@@ -145,6 +142,7 @@ DROP TABLE PUPIL;
 # (1b) 13.Remove the rows of 'Fall' Semester in section
 
 ```
+DELETE FROM SECTION
 WHERE SEMESTER = 'Fall';
 ```
 ![output](1b_13.png)
@@ -157,6 +155,7 @@ WHERE COURSE_NAME = 'Data Structures';
 ![output](1b_14.png)
 # (1b) 15.Remove all rows in all table using Truncate table
 
+```
 TRUNCATE TABLE GRADE_REPORT;
 TRUNCATE TABLE PREREQUISITES;
 TRUNCATE TABLE SECTION;
@@ -165,7 +164,7 @@ TRUNCATE TABLE PUPIL;
 ```
 ![output](1b_15.png)
 
-# (1b) 16.Remove pupil course and section table so that it exsit in recycle binDROP TABLE PUPIL;
+# (1b) 16.Remove pupil course and section table so that it exist in recycle binDROP TABLE PUPIL;
 
 ```
 DROP TABLE COURSE;
@@ -181,17 +180,18 @@ DROP TABLE GRADE_REPORT PURGE;
 DROP TABLE PREREQUISITES PURGE;
 ```
 ![output](1b_17.png)
-```
-DELETE FROM SECTION
-# (1b) 12.Remove the student table
-
-
+MODIFY BRANCH VARCHAR2(10) NOT NULL;
+ALTER TABLE STUDENT
 SET CREDIT_HOURS = 4
 
+![output](1b_8.png)
+RENAME COLUMN COURSE_NUMBER TO CID;
 ```
 
-# (1b) 8.Change the name of Course_number to cid in course and describe it.
-```
-DROP COLUMN MAJOR;
-
+![output](1.ff.png)
+![output](1.ee.png)
+![output](1.dd.png)
+SELECT * FROM PREREQUISITES;
+SELECT * FROM SECTION;
+SELECT * FROM STUDENT;
 
