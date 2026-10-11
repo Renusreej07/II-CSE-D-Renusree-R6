@@ -1,112 +1,354 @@
-# (5a) Create student Database with attributes Student_id, Student_name, course and Marks and insert at least 15 row of data using insert statement.
+# experiment - 7a
+
+
+## 1.create Table and Inserting values
 ```
-CREATE TABLE STUDENT (
-    STUDENT_ID NUMBER PRIMARY KEY,
-    STUDENT_NAME VARCHAR2(30),
-    COURSE VARCHAR2(30),
-    MARKS NUMBER(3)
+SET SERVEROUTPUT ON;
+
+CREATE TABLE student (
+    st
+udent_id NUMBER(5) PRIMARY KEY,
+    student_name VARCHAR2(50),
+    course VARCHAR2(30),
+    marks NUMBER(5,2)
 );
 
-INSERT INTO STUDENT VALUES (1, 'Anil', 'CSE', 85);
-INSERT INTO STUDENT VALUES (2, 'Bhavya', 'CSE', 72);
-INSERT INTO STUDENT VALUES (3, 'Charan', 'ECE', 55);
-INSERT INTO STUDENT VALUES (4, 'Divya', 'CSE', 91);
-INSERT INTO STUDENT VALUES (5, 'Esha', 'EEE', 48);
-INSERT INTO STUDENT VALUES (6, 'Farhan', 'CSE', 67);
-INSERT INTO STUDENT VALUES (7, 'Gowtham', 'ECE', 59);
-INSERT INTO STUDENT VALUES (8, 'Harika', 'CSE', 76);
-INSERT INTO STUDENT VALUES (9, 'Ishitha', 'IT', 88);
-INSERT INTO STUDENT VALUES (10, 'Jayanth', 'CSE', 45);
-INSERT INTO STUDENT VALUES (11, 'Kavya', 'IT', 63);
-INSERT INTO STUDENT VALUES (12, 'Lokesh', 'ECE', 52);
-INSERT INTO STUDENT VALUES (13, 'Manasa', 'CSE', 95);
-INSERT INTO STUDENT VALUES (14, 'Naveen', 'EEE', 58);
-INSERT INTO STUDENT VALUES (15, 'Pooja', 'CSE', 81);
+INSERT INTO student VALUES (101, 'Ravi', 'CSE', 85);
+INSERT INTO student VALUES (102, 'Sita', 'CSE', 92);
+INSERT INTO student VALUES (103, 'Kiran', 'ECE', 78);
+INSERT INTO student VALUES (104, 'Anjali', 'EEE', 88);
+INSERT INTO student VALUES (105, 'Rahul', 'CSE', 74);
+
+COMMIT;
+
+```
+![output](7a-01.png)
+###insertion 
+![output](7a-02.png)
+### displaying student table
+![output](7a-03.png)
+
+## verifying student tables
+
+## 2. create the stored PROCEDURE
+```
+CREATE OR REPLACE PROCEDURE GET_STUDENT_DETAILS (
+    p_student_id   IN  student.student_id%TYPE,
+    p_student_name OUT student.student_name%TYPE,
+    p_marks        OUT student.marks%TYPE
+)
+IS
+BEGIN
+    -- Retrieve student details
+    SELECT student_name, marks
+    INTO p_student_name, p_marks
+    FROM student
+    WHERE student_id = p_student_id;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        p_student_name := NULL;
+        p_marks := NULL;
+
+        DBMS_OUTPUT.PUT_LINE(
+            'No student found with ID: ' || p_student_id
+        );
+
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(
+            'Error: ' || SQLERRM
+        );
+END;
+/
+```
+![output](7a-04.png)
+
+##  Execution of procedure by creating anonymous PL/SQL
+```
+DECLARE
+    -- Variables to receive OUT parameter values
+    v_student_name student.student_name%TYPE;
+    v_marks        student.marks%TYPE;
+
+BEGIN
+    -- Call the procedure
+    GET_STUDENT_DETAILS(
+        101,
+        v_student_name,
+        v_marks
+    );
+
+    -- Display returned values
+    IF v_student_name IS NOT NULL THEN
+        DBMS_OUTPUT.PUT_LINE(
+            'Student Name : ' || v_student_name
+        );
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Marks        : ' || v_marks
+        );
+    END IF;
+
+END;
+/
+```
+![output](7a-05.png)
+## output calling by wrong student
+![output](7a-06.png)
+
+ 
+## 1. Enable server DBMS_OUTPUT
+```
+ SET SERVEROUTPUT ON;
+```
+![output](7a-07.png)
+
+## 2.CREATE TWO BIND Variables
+ 
+```
+VARIABLE v_name VARCHAR2(50);
+VARIABLE v_marks NUMBER;
+```
+![output](7a-08.png)
+
+## 3.CALL THE PROCEDURE
+```
+EXEC GET_STUDENT_DETAILS(101, :v_name, :v_marks);
+```
+![output](7a-09.png)
+
+## 4.PRINT THE TWO BINDED VARIABLES;
+```
+PRINT v_name;
+PRINT v_marks;
+```
+![output](7a-10.png)
+
+## 4.CALL THE PROCEDURE WITH WRONG INPUT
+```
+EXEC GET_STUDENT_DETAILS(-102, :v_name, :v_marks);
+
+```
+![output](7a-11.png)
+
+#--exp-7b
+# Program 1: Calculate Annual Salary Using a Stored Function
+
+## creating table employee
+```
+CREATE TABLE employee (
+    employee_id NUMBER(5) PRIMARY KEY,
+    employee_name VARCHAR2(50),
+    monthly_salary NUMBER(10,2)
+);
+```
+![output](7b-01.png)
+## 2. Inserting values
+```
+INSERT INTO employee VALUES (101, 'Ravi', 25000);
+INSERT INTO employee VALUES (102, 'Sita', 30000);
+INSERT INTO employee VALUES (103, 'Kiran', 35000);
+INSERT INTO employee VALUES (104, 'Anjali', 40000);
+INSERT INTO employee VALUES (105, 'Rahul', 45000);
+
 
 COMMIT;
 ```
-![output](op-1.png)
-![output](op-2.png)
-![output](op-3.png)
+![output](7b-02.png)
+##  3.Create the stored Function
+```
+CREATE OR REPLACE FUNCTION CALCULATE_ANNUAL_SALARY (
+    p_monthly_salary IN NUMBER
+)
+RETURN NUMBER
+IS
+    v_annual_salary NUMBER;
+BEGIN
+    -- Calculate annual salary
+    v_annual_salary := p_monthly_salary * 12;
+
+    -- Return annual salary
+    RETURN v_annual_salary;
+END;
+```
+![output](7b-03.png)
+## 4.Executing the function Using Select
+```
+SELECT
+    employee_id,
+    employee_name,
+    monthly_salary,
+    CALCULATE_ANNUAL_SALARY(monthly_salary) AS annual_salary
+FROM employee;
+```
+![output](7b-04.png)
+# Program 2: Find the Total Number of Students in a Course
+
+## 1.Create the student table
+```
+CREATE TABLE student (
+    student_id NUMBER(5) PRIMARY KEY,
+    student_name VARCHAR2(50),
+    marks NUMBER(5,2)
+);
+```
+![output](7b-05.png)
+## 2.Insert values in table student 
+```
+INSERT INTO student VALUES (101, 'Ravi',   85);
+INSERT INTO student VALUES (102, 'Sita',   72);
+INSERT INTO student VALUES (103, 'Kiran',  55);
+INSERT INTO student VALUES (104, 'Anjali', 45);
+INSERT INTO student VALUES (105, 'Rahul',  30);
+INSERT INTO student VALUES (106, 'Priya',  91);
+INSERT INTO student VALUES (107, 'Arun',   68);
+INSERT INTO student VALUES (108, 'Sneha',  58);
+
+COMMIT;
+```
+![output](7b-06.png)
+### Dispaying student table 
+```
+SELECT * FROM student;
+```
+![output](7b-07.png)
+## 3.CREATE THE STORED FUNCTION
+```
+CREATE OR REPLACE FUNCTION COUNT_STUDENTS (
+    p_course IN VARCHAR2
+)
+RETURN NUMBER
+IS
+    v_total_students NUMBER;
+BEGIN
+    -- Count students belonging to the given course
+```
+![output](7b-08.png)
+
+## INVOKE THE FUNCTION USING SELECT 
+```
+SELECT 
+     'CSE' AS course,
+      COUNT_STUDENTS('CSE') AS total_students
+   FROM dual;
+![output](7b-09.png)
+
+
+## TEST OTHER COURSES
+```
+SELECT
+    'ECE' AS course,
+
+FROM dual;
+![output](7b-10.png)
+```
+SELECT
+FROM (
+    SELECT DISTINCT course
+    FROM student
+);
+![output](7b-11.png)
+# Program 3: Determine Student Grade Using a Complex Stored Function
+
+## 1.CREATE THE STUDENT TABLE
 
 ```
-SET SERVEROUTPUT ON;
+CREATE TABLE student (
+    student_name VARCHAR2(50),
+);
+```
+![output](7b-12.png)
+## 2.INSERTING VALUES
+```
+INSERT INTO student VALUES (101, 'Ravi',   85);
+INSERT INTO student VALUES (102, 'Sita',   72);
+INSERT INTO student VALUES (105, 'Rahul',  30);
+INSERT INTO student VALUES (107, 'Arun',   68);
+INSERT INTO student VALUES (108, 'Sneha',  58);
 
-DECLARE
-    CURSOR C1 IS
-        SELECT STUDENT_ID, STUDENT_NAME, MARKS
-        FROM STUDENT
-        WHERE MARKS >= 60;
+COMMIT;
+```
+![output](7b-13.png)
 
-    V_FOUND BOOLEAN := FALSE;
-    E_NO_STUDENT EXCEPTION;
+###  DISPLAYING STUDENT TABLE
+```
+SELECT * FROM student;
+INSERT INTO student VALUES (106, 'Priya',  91);
+```
+![output](7b-14.png)
 
+## 3.CREATE THE STORED FUNCTION GET_GRADE
+CREATE OR REPLACE FUNCTION GET_GRADE (
+    p_marks IN NUMBER
+)
+RETURN VARCHAR2
+IS
+    v_grade VARCHAR2(20);
 BEGIN
-    FOR REC IN C1 LOOP
-        V_FOUND := TRUE;
 
-        DBMS_OUTPUT.PUT_LINE(
-            'Student ID: ' || REC.STUDENT_ID ||
-            ', Student Name: ' || REC.STUDENT_NAME ||
-            ', Marks: ' || REC.MARKS
-        );
-    END LOOP;
+    -- Determine grade based on marks
+    IF p_marks >= 75 THEN
 
-    IF V_FOUND = FALSE THEN
-        RAISE E_NO_STUDENT;
+    ELSIF p_marks >= 60 THEN
+        v_grade := 'First Class';
+
+    ELSIF p_marks >= 50 THEN
+        v_grade := 'Second Class';
+
+    ELSIF p_marks >= 35 THEN
+        v_grade := 'Pass';
+
+    ELSE
+        v_grade := 'Fail';
     END IF;
 
-EXCEPTION
-    WHEN E_NO_STUDENT THEN
-        DBMS_OUTPUT.PUT_LINE('No First Class Students Found.');
+    -- Return the calculated grade
+    RETURN v_grade;
 
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
 ```
-![output](op-4.png)
-![output](op-5.png)
-![output](op-6.png)
-![output](op-7.png)
-![output](op-8.png)
+![output](7b-15.png)
+## 4.INVOKE THE FUNCTION USING SELECT
+```
+SELECT
+    student_name,
+    marks,
+    GET_GRADE(marks) AS grade
+FROM student;
+```
+![output](7b-16.png)
 
-# (5b) 5b) Insert data into student table and use COMMIT, ROLLBACK and SAVEPOINT in PL/SQL block. 
 
+
+INSERT INTO student VALUES (103, 'Kiran',  55);
+    student_id NUMBER(5) PRIMARY KEY,
+```
+    COUNT_STUDENTS(course) AS total_students
+    course,
+## DISPLAY COUNT FOR ALL COURSES
+    COUNT_STUDENTS('ECE') AS total_students
+```
+![output](7b-9.png)
+FROM dual;
+    COUNT_STUDENTS('CSE') AS total_students
+    'CSE' AS course,
+SELECT
 
 ```
-SET SERVEROUTPUT ON;
-
-BEGIN
-    INSERT INTO STUDENT
-    VALUES (16, 'Rahul', 'CSE', 85);
-
-    INSERT INTO STUDENT
-    VALUES (17, 'Sneha', 'ECE', 78);
-
-    SAVEPOINT SP1;
-
-    INSERT INTO STUDENT
-    VALUES (18, 'Kiran', 'EEE', 65);
-
-    DBMS_OUTPUT.PUT_LINE('All three records have been inserted.');
-
-    ROLLBACK TO SP1;
-
-    DBMS_OUTPUT.PUT_LINE('Rollback to SAVEPOINT completed.');
-
-    COMMIT;
-
-    DBMS_OUTPUT.PUT_LINE('Transaction committed successfully.');
-
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+## INVOKE THE FUNCTION USING SQL SELECT
+![output](7b-8.png)
+```
+    RETURN v_total_students;
 END;
-/
+    -- Return the count
 
-SELECT * FROM STUDENT;
+        v_grade := 'Distinction';
 ```
-![output](op-b1.png)
-![output](op-b2.png)
+
+INSERT INTO student VALUES (104, 'Anjali', 45);
+    marks NUMBER(5,2)
+
+```
+```
 
