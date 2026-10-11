@@ -1,107 +1,164 @@
-# (10) 1.Create the employee table
+# (1) creating subject table
 ```
-CREATE TABLE employee (
-    employee_id   NUMBER(6) PRIMARY KEY,
-    employee_name VARCHAR2(50),
-    department    VARCHAR2(30),
-    salary        NUMBER(10,2)
+CREATE TABLE SUBJECT (
+    SUBJECT_ID NUMBER PRIMARY KEY,
+    SUBJECT_NAME VARCHAR2(50) NOT NULL
 );
 ```
-![output](10a.png)
-
-# (10) 2.Insert into sample employee records
+![output](11-01.png)
+## inserting values
 ```
-INSERT INTO employee VALUES (1001, 'Ravi',   'CSE', 30000);
-INSERT INTO employee VALUES (1002, 'Sita',   'ECE', 35000);
-INSERT INTO employee VALUES (1003, 'Kiran',  'EEE', 40000);
-INSERT INTO employee VALUES (1004, 'Anjali', 'CSE', 45000);
-INSERT INTO employee VALUES (1005, 'Rahul',  'ECE', 38000);
-INSERT INTO employee VALUES (1006, 'Priya',  'CSE', 50000);
-INSERT INTO employee VALUES (1007, 'Arun',   'EEE', 42000);
-INSERT INTO employee VALUES (1008, 'Sneha',  'CSE', 48000);
-INSERT INTO employee VALUES (1009, 'Vijay',  'ECE', 36000);
-INSERT INTO employee VALUES (1010, 'Divya',  'CSE', 52000);
+INSERT INTO SUBJECT VALUES (1, 'Computer Science');
+INSERT INTO SUBJECT VALUES (2, 'Physics');
+INSERT INTO SUBJECT VALUES (3, 'Mathematics');
+INSERT INTO SUBJECT VALUES (4, 'Chemistry');
 
 COMMIT;
 ```
-![output](10b.png)
+![output](11-02.png)
+## display
+```
+SELECT * FROM SUBJECT;
+```
+![output](11-03.png)
+# (2) create author table
+```
+CREATE TABLE AUTHOR (
+    AUTHOR_ID NUMBER PRIMARY KEY,
+    AUTHOR_NAME VARCHAR2(50) NOT NULL,
+    SUBJECT_ID NUMBER,
+    
+    CONSTRAINT FK_AUTHOR_SUBJECT
+    FOREIGN KEY (SUBJECT_ID)
+    REFERENCES SUBJECT(SUBJECT_ID)
+);
+```
+![output](11-04.png)
+## insertingg
+```
+INSERT INTO AUTHOR VALUES (101, 'Ravi Kumar', 1);
+INSERT INTO AUTHOR VALUES (102, 'Sita Rao', 2);
+INSERT INTO AUTHOR VALUES (103, 'Kiran Reddy', 3);
+INSERT INTO AUTHOR VALUES (104, 'Anu Sharma', 1);
+INSERT INTO AUTHOR VALUES (105, 'Rahul Verma', 4);
 
-# (10) 3.Verify the employee
+COMMIT;
 ```
-SELECT * FROM employee;
+![output](11-05.png)
+# display
 ```
-![output](10c.png)
+SELECT * FROM AUTHOR;
+```
+![output](11-06.png)
+# (3) create editor
+```
+CREATE TABLE EDITOR (
+    EDITOR_ID NUMBER PRIMARY KEY,
+    EDITOR_NAME VARCHAR2(50) NOT NULL
+);
+```
+![output](11-07.png)
+## inserting
+```
+INSERT INTO EDITOR VALUES (201, 'Editor Kumar');
+INSERT INTO EDITOR VALUES (202, 'Editor Priya');
+INSERT INTO EDITOR VALUES (203, 'Editor Raj');
+INSERT INTO EDITOR VALUES (204, 'Editor Meena');
 
-# (10) 4.Execute search query without an index
+COMMIT;
 ```
-SELECT *
-FROM employee
-WHERE employee_name = 'Ravi';
+![output](11-08.png)
+## dispaly
 ```
-![output](10d.png)
+SELECT * FROM EDITOR;
+```
+![output](11-09.png)
 
-# (10) 5.Display the execution plan
+#(4) create publication
 ```
-EXPLAIN PLAN FOR
-SELECT *
-FROM employee
-WHERE employee_name = 'Ravi';
+CREATE TABLE PUBLICATION (
+    PUBLICATION_ID NUMBER PRIMARY KEY,
+    PUBLICATION_TITLE VARCHAR2(100) NOT NULL,
+    AUTHOR_ID NUMBER,
+    SUBJECT_ID NUMBER,
+    EDITOR_ID NUMBER,
 
-SELECT *
-FROM TABLE(DBMS_XPLAN.DISPLAY);
-```
-![output](10e.png)
+    CONSTRAINT FK_PUBLICATION_AUTHOR
+    FOREIGN KEY (AUTHOR_ID)
+    REFERENCES AUTHOR(AUTHOR_ID),
 
-# (10) 6.Create an index on the search column
-```
-CREATE INDEX idx_employee_name
-ON employee(employee_name);
-```
-![output](10f.png)
+    CONSTRAINT FK_PUBLICATION_SUBJECT
 
-# (10) 7.Execute the same query again
-```
-SELECT *
-FROM employee
-WHERE employee_name = 'Ravi';
-```
-![output](10g.png)
-# (10) 8.Gather table statistics
-```
-BEGIN
-    DBMS_STATS.GATHER_TABLE_STATS(
-        USER,
-        'EMPLOYEE'
-    );
-END;
-/
-```
-![output](10h.png)
-# (10) 9.Now generate the execution plan again
-EXPLAIN PLAN FOR
+    CONSTRAINT FK_PUBLICATION_EDITOR
+    FOREIGN KEY (EDITOR_ID)
+    REFERENCES EDITOR(EDITOR_ID)
 
-SELECT *
-FROM employee
-WHERE employee_name = 'Ravi';
-
-
-SELECT *
-FROM TABLE(DBMS_XPLAN.DISPLAY);
-
-```
-![output](10i.png)
-# (10) 10.Drop the created index
+);
 ```
 
-DROP INDEX idx_employee_name;
-```
-![output](10j.png)
-# (10) 11.Verify the index has been removed
-```
+![output](11-10.png)
 
-SELECT index_name
-FROM user_indexes
-WHERE index_name = 'IDX_EMPLOYEE_NAME';
+# insert
 ```
-![output](10k.png)
+INSERT INTO PUBLICATION
+VALUES (301, 'Database Systems', 101, 1, 201);
+
+
+INSERT INTO PUBLICATION
+VALUES (302, 'Modern Physics', 102, 2, 202);
+
+INSERT INTO PUBLICATION
+VALUES (303, 'Advanced Mathematics', 103, 3, 203);
+
+
+INSERT INTO PUBLICATION
+VALUES (304, 'Computer Networks', 104, 1, 201);
+
+INSERT INTO PUBLICATION
+VALUES (305, 'Organic Chemistry', 105, 4, 204);
+
+
+COMMIT;
+```
+![output](11-11.png)
+
+# display
+```
+SELECT * FROM PUBLICATION;
+```
+![output](11-12.png)
+
+
+
+# combined output
+```
+SELECT
+    P.PUBLICATION_ID,
+    P.PUBLICATION_TITLE,
+    A.AUTHOR_NAME,
+    S.SUBJECT_NAME,
+    E.EDITOR_NAME
+FROM PUBLICATION P
+JOIN AUTHOR A
+    ON P.AUTHOR_ID = A.AUTHOR_ID
+JOIN SUBJECT S
+    ON P.SUBJECT_ID = S.SUBJECT_ID
+JOIN EDITOR E
+    ON P.EDITOR_ID = E.EDITOR_ID
+ORDER BY P.PUBLICATION_ID;
+```
+![output](11-13.png)
+
+# primary key/foriegn key proof
+```
+SELECT
+    TABLE_NAME,
+    CONSTRAINT_NAME,
+    CONSTRAINT_TYPE
+FROM USER_CONSTRAINTS
+WHERE TABLE_NAME IN
+('SUBJECT', 'AUTHOR', 'EDITOR', 'PUBLICATION')
+ORDER BY TABLE_NAME;
+```
+![output](11-14.png)
 
